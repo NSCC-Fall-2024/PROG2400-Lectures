@@ -8,7 +8,7 @@
 class EchoApplication {
 
  public:
-  static int run();
+  static int run(std::istream& in, std::ostream& out);
 };
 
 #endif //ECHO__ECHO_APPLICATION_H_
