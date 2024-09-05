@@ -3,4 +3,6 @@ project(echo)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(echo main.cpp)
+add_executable(echo main.cpp
+        echo_application.cpp
+        echo_application.h)
