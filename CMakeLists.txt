@@ -4,3 +4,4 @@ project(PROG2400-Lectures)
 
 add_subdirectory(hello_world)
 add_subdirectory(echo)
+add_subdirectory(command_line)
