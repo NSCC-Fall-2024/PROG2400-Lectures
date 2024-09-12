@@ -4,7 +4,7 @@
 int main() {
 
     std::string user_input;
-    char command;
+    std::string command;
     auto start = -1;
     auto end = -1;
 
