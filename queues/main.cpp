@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 struct Data {
   int _age {0};
@@ -20,18 +21,35 @@ class Queue final {
   class SmartNodePtr {
     Queue::Node *_node {nullptr};
   public:
-    explicit SmartNodePtr(Queue::Node *node) : _node(node) {}
+    explicit SmartNodePtr(Queue::Node *node) : _node(node) {
+        if (_node != nullptr) {
+            std::cout << _node->_data._name << ": SmartNodePtr constructed." << std::endl;
+        }
+    }
+    SmartNodePtr(SmartNodePtr &&node) noexcept {
+        _node = node._node;
+        node._node = nullptr;
+    }
     ~SmartNodePtr() {
+        if (_node != nullptr) {
+            std::cout << _node->_data._name << ": SmartNodePtr destructed." << std::endl;
+        }
         delete _node;
+    }
+    SmartNodePtr &operator=(SmartNodePtr &&node) noexcept {
+        _node = node._node;
+        node._node = nullptr;
+        return *this;
     }
 
     static SmartNodePtr make_smartnodeptr(Data data) {
-        return SmartNodePtr(new Queue::Node({data}));
+        return SmartNodePtr(new Queue::Node({std::move(data)}));
     }
 
     bool operator==(Queue::Node *n) const { return _node == n; }
     bool operator!=(Queue::Node *n) const { return _node != n; }
     Queue::Node *operator->() const noexcept { return _node; }
+    [[nodiscard]] Node *get() const { return _node; }
   };
 
   struct Node {
@@ -42,22 +60,23 @@ class Queue final {
   };
 
   SmartNodePtr _front {nullptr};
-  SmartNodePtr _back {nullptr};
+  Node *_back {nullptr};
   size_t _size {0};
 public:
   void push_back(Data data) {
       //auto node = new Node {data};
-      auto node = SmartNodePtr::make_smartnodeptr(data);
+      auto node = SmartNodePtr::make_smartnodeptr(std::move(data));
 
       // are we adding to an empty queue?
       if (_front == nullptr) {
           // yes! it is empty
-          _front = node;
+          _front = std::move(node);
+          _back = _front.get();
       } else {
           // no! there is a node already.
-          _back->_next = node;
+          _back->_next = std::move(node);
+          _back = _back->_next.get();
       }
-      _back = node;
 
       _size++;
   }
@@ -67,9 +86,9 @@ public:
       // can't remove from an empty queue
       if (_front == nullptr) return;
 
-      auto node = _front;
+      auto node = std::move(_front);
 
-      _front = _front->_next;
+      _front = std::move(node->_next);
 
       // update the back if we are deleting the last node
       if (_front == nullptr) _back = nullptr;
@@ -96,10 +115,10 @@ public:
 
 std::ostream &operator<<(std::ostream &output, const Queue &queue) {
 
-    auto node = queue._front;
+    auto node = queue._front.get();
     while (node != nullptr) {
         output << node->_data << " ";
-        node = node->_next;
+        node = node->_next.get();
     }
     return output;
 }
