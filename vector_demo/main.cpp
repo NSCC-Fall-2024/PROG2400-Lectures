@@ -14,7 +14,17 @@ void operator<<(std::vector<int> &v, const std::vector<int> &in) {
     }
 }
 
+class VectorDemo {
+public:
+  const int ROWS = 51;
+  const int COLS = 51;
+  std::vector<int> _nums;
+  VectorDemo() : _nums(ROWS * COLS) {}
+};
+
 int main() {
+
+    VectorDemo vd;
 
     std::cout << "basic vector...." << std::endl;
     std::vector<int> v = {1, 2, 3, 4, 5};
