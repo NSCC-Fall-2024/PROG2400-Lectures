@@ -3,4 +3,7 @@ project(sorting)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(sorting main.cpp bst.cpp)
+add_executable(sorting
+        main.cpp
+        bst.cpp
+        sorting.cpp)
